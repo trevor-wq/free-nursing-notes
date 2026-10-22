@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nursing Notes</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #2196F3; /* PNLE Blue */
+      --accent-color: #28A9A7;  /* Gold */
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Simple Header */
+    .header {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      text-align: center;
+      padding: 25px 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-bottom: 4px solid var(--accent-color);
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+
+    /* Container & Gallery Grid */
+    .container {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    /* Note Cards */
+    .note-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .note-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary-color);
+    }
+
+    .img-container {
+      width: 100%;
+      height: 200px;
+      background-color: #cbd5e1;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .note-card:hover .img-container img {
+      transform: scale(1.05);
+    }
+
+    .card-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-view {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .btn-download {
+      background-color: #10b981;
+      color: #ffffff;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Lightbox / Zoom Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(15, 23, 42, 0.95);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-header {
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ffffff;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .back-btn {
+      background-color: var(--accent-color);
+      color: #0f172a;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-body {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .image-wrapper {
+      transition: transform 0.1s ease-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .image-wrapper img {
+      max-width: 90vw;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <h1><i class="fa-solid fa-user-nurse"></i> All Nursing Notes</h1>
+    <p>nursing notes, can view and download. I hope it helps and goodluck future RN, labaRN!!.</p>
+  </header>
+
+  <!-- Main Content: 70 Pictures Grid -->
+  <main class="container">
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </main>
+
+  <!-- View & Zoom Modal -->
+  <div class="modal" id="photoModal">
+    <div class="modal-header">
+      <!-- Back Button para makapamili ulit -->
+      <button class="back-btn" id="closeBtn">
+        <i class="fa-solid fa-arrow-left"></i> back
+      </button>
+
+      <!-- Zoom and Download Controls -->
+      <div class="zoom-controls">
+        <button class="icon-btn" id="zoomOutBtn" title="Paliliitin (-)"><i class="fa-solid fa-minus"></i></button>
+        <button class="icon-btn" id="zoomResetBtn" title="Reset Zoom"><i class="fa-solid fa-rotate-left"></i></button>
+        <button class="icon-btn" id="zoomInBtn" title="Palalaking (+)"><i class="fa-solid fa-plus"></i></button>
+        <a id="downloadModalBtn" class="btn btn-download" style="padding: 0 12px; height: 36px;" download>
+          <i class="fa-solid fa-download"></i> Download
+        </a>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="image-wrapper" id="imageWrapper">
+        <img id="modalImg" src="" alt="Nursing Note View">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // GENERATE 70 PICTURES (1.jpg, 2.jpg ... hanggang 70.jpg)
+    const notesData = Array.from({ length: 70 }, (_, index) => {
+      const id = index + 1;
+      return {
+        id: id,
+        title: `Nursing Note #${id}`,
+        src: `${id}.jpg` // Automatic babasahin ang 1.jpg hanggang 70.jpg na ii-import mo!
+      };
+    });
+
+    const galleryGrid = document.getElementById("galleryGrid");
+    const photoModal = document.getElementById("photoModal");
+    const modalImg = document.getElementById("modalImg");
+    const downloadModalBtn = document.getElementById("downloadModalBtn");
+    const imageWrapper = document.getElementById("imageWrapper");
+
+    const closeBtn = document.getElementById("closeBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const zoomResetBtn = document.getElementById("zoomResetBtn");
+
+    let currentZoom = 1;
+
+    // 1. Render all 70 Notes sa Grid
+    function renderNotes() {
+      galleryGrid.innerHTML = "";
+      notesData.forEach((note, index) => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+        card.innerHTML = `
+          <div class="img-container" onclick="openView(${index})">
+            <img src="${note.src}" alt="${note.title}" loading="lazy">
+          </div>
+          <div class="card-body">
+            <span class="card-title">${note.title}</span>
+            <div class="btn-group">
+              <button class="btn btn-view" onclick="openView(${index})">
+                <i class="fa-solid fa-eye"></i> View
+              </button>
+              <a href="${note.src}" download="Nursing_Note_${note.id}.jpg" class="btn btn-download">
+                <i class="fa-solid fa-download"></i>
+              </a>
+            </div>
+          </div>
+        `;
+        galleryGrid.appendChild(card);
+      });
+    }
+
+    // 2. Open Lightbox/View
+    function openView(index) {
+      const note = notesData[index];
+      modalImg.src = note.src;
+      downloadModalBtn.href = note.src;
+      downloadModalBtn.setAttribute("download", `Nursing_Note_${note.id}.jpg`);
+      photoModal.classList.add("active");
+      resetZoom();
+    }
+
+    // 3. Close / Back Button
+    closeBtn.addEventListener("click", () => {
+      photoModal.classList.remove("active");
+    });
+
+    // 4. Zoom Logic (Palakihin, Paliliitin, Reset)
+    function applyZoom() {
+      imageWrapper.style.transform = `scale(${currentZoom})`;
+    }
+
+    zoomInBtn.addEventListener("click", () => {
+      if (currentZoom < 3) {
+        currentZoom += 0.25;
+        applyZoom();
+      }
+    });
+
+    zoomOutBtn.addEventListener("click", () => {
+      if (currentZoom > 0.5) {
+        currentZoom -= 0.25;
+        applyZoom();
+      }
+    });
+
+    function resetZoom() {
+      currentZoom = 1;
+      applyZoom();
+    }
+
+    zoomResetBtn.addEventListener("click", resetZoom);
+
+    // Initial Load
+    renderNotes();
+  </script>
+</body>
+</html>
